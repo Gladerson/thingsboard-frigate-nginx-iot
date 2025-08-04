@@ -1,0 +1,42 @@
+services:
+  thingsboard:
+    container_name: thingsboard
+    image: "thingsboard/tb-postgres"
+    restart: always
+    ports:
+      - "9090:9090"
+      - "1883:1883"
+      - "7070:7070"
+      - "5683-5688:5683-5688/udp"
+    environment:
+      # URL do banco de dados PostgreSQL
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/thingsboard"
+      # Credenciais do banco de dados (devem corresponder ao serviço 'postgres')
+      SPRING_DATASOURCE_USERNAME: "postgres"
+      SPRING_DATASOURCE_PASSWORD: "password"
+    volumes:
+      - ./tb-logs:/var/log/thingsboard
+    depends_on:
+      - postgres
+    networks:
+      - proxy-net
+
+  postgres:
+    container_name: postgres
+    image: "postgres:12"
+    restart: always
+    environment:
+      # Nome do banco de dados
+      POSTGRES_DB: "thingsboard"
+      # Usuário do banco de dados
+      POSTGRES_USER: "postgres"
+      # Senha do banco de dados
+      POSTGRES_PASSWORD: "password"
+    volumes:
+      - ./tb-data:/var/lib/postgresql/data
+    networks:
+      - proxy-net
+
+networks:
+  proxy-net:
+    external: true

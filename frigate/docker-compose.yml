@@ -1,0 +1,29 @@
+services:
+  frigate:
+    container_name: frigate
+    privileged: true
+    restart: unless-stopped
+    image: ghcr.io/blakeblackshear/frigate:stable
+    shm_size: '256mb' # Recomendável aumentar para múltiplas câmeras
+    volumes:
+      # Garanta que a pasta 'config' com seu config.yml está no mesmo local que este arquivo
+      - ./config/config.yml:/config/config.yml
+      # Garanta que a pasta 'media' está no mesmo local que este arquivo
+      - ./media:/media/frigate
+      - /etc/localtime:/etc/localtime:ro
+      - type: tmpfs
+        target: /tmp/cache
+        tmpfs:
+          size: 1000000000
+    ports:
+      # - "5000:5000"     # WEB UI: COMENTADO! O acesso agora é feito pelo proxy reverso.
+      # - "1935:1935"       # RTMP: EXPOSTO! Porta aberta para as câmeras enviarem vídeo.
+      - "8554:8554"       # RTSP Restream: Para acessar os streams do Frigate em outros apps (ex: VLC).
+      - "8555:8555"       # WebRTC
+      - "8556:8556/udp"   # WebRTC
+    networks:
+      - proxy-net
+
+networks:
+  proxy-net:
+    external: true

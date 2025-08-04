@@ -1,0 +1,20 @@
+services:
+  app:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: nginx-proxy-manager
+    restart: unless-stopped
+    ports:
+      # Essas portas são públicas.
+      - '80:80'   # Porta HTTP Padrão
+      - '443:443' # Porta HTTPS Padrão
+      # Porta para acessar a interface de admin
+      - '81:81'
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
+    networks:
+      - proxy-net
+
+networks:
+  proxy-net:
+    external: true

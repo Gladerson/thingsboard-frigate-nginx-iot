@@ -1,0 +1,67 @@
+# /home/suporte/frigate/config/config.yml
+
+mqtt:
+  host: thingsboard
+  port: 1883
+  user: 8q6378gu44us95h39yex
+  password: ''
+  topic_prefix: v1/devices/me/telemetry
+  client_id: frigate_semarh
+
+detectors:
+  cpu:
+    type: cpu
+    num_threads: 3
+
+cameras:
+  camera_semarh:
+    mqtt:
+      enabled: true  # Habilita publicação MQTT
+      timestamp: true
+      bounding_box: true
+    ffmpeg:
+      input_args:
+        - -avoid_negative_ts
+        - make_zero
+        - -fflags
+        - +genpts+discardcorrupt
+        - -flags
+        - low_delay
+        - -analyzeduration
+        - 1000M
+        - -probesize
+        - 1000M
+        - -rw_timeout
+        - '5000000'
+
+      inputs:
+        - path: rtmp://nginx-rtmp/live/02:53:45:4b:fd:2a
+          roles: [detect, record, rtmp]
+          input_args:
+            - -c:v
+            - h264
+
+    detect:
+      width: 640
+      height: 480
+      fps: 5
+      enabled: true
+
+    record:
+      enabled: true
+      retain:
+        days: 1
+        mode: motion
+
+    snapshots:
+      enabled: true
+      retain:
+        default: 1
+
+    objects:
+      track:
+        - person
+#        - car
+#        - dog
+        - cat
+version: 0.15-1

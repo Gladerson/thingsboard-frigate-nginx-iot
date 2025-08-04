@@ -1,0 +1,8 @@
+# Ignorar a pasta de mídia do Frigate
+frigate/media/
+thingsboard/tb-data/
+thingsboard/tb-logs
+npm/data
+npm/letsencrypt
+nginx-rtmp/logs
+nginx-rtmp/nginx-tmp
